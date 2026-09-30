@@ -1,0 +1,10 @@
+{
+    "Core": true,
+    "Certificate": true,
+    "Citizen": true,
+    "Accounts": true,
+    "Report": true,
+    "Setting": true,
+    "Applicant": true,
+    "Payment": true
+}

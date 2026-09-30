@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/citizen",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Citizen\\": "app/",
+            "Modules\\Citizen\\Database\\Factories\\": "database/factories/",
+            "Modules\\Citizen\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Citizen\\Tests\\": "tests/"
+        }
+    }
+}

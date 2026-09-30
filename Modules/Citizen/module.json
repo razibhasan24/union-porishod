@@ -1,0 +1,11 @@
+{
+    "name": "Citizen",
+    "alias": "citizen",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Citizen\\Providers\\CitizenServiceProvider"
+    ],
+    "files": []
+}
