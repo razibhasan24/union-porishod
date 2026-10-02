@@ -218,7 +218,31 @@
 
 
         {{-- ================= APPLICANT SECTION ================= --}}
-        {{-- ভবিষ্যতে Applicant module যোগ হলে un-comment করবেন --}}
+        @if (class_exists(\Modules\Payment\Models\Payment::class))
+        @canany(['certificate_application.view', 'certificate_application.approve'])
+            <li class="nav-item mt-3 mb-1">
+                <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                    পেমেন্ট
+                </small>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="{{ route('payment.admin.index') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('payment.admin.*') ? 'active bg-primary' : 'hover-bg' }}">
+                    <i class="bi bi-credit-card me-2"></i>
+                    <span>পেমেন্ট তালিকা</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="{{ route('payment.admin.cash-entry') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('payment.admin.cash-entry') ? 'active bg-success' : 'hover-bg' }}">
+                    <i class="bi bi-cash-coin me-2"></i>
+                    <span>নগদ পেমেন্ট এন্ট্রি</span>
+                </a>
+            </li>
+        @endcanany
+    @endif
         @if (class_exists(\Modules\Applicant\Providers\ApplicantServiceProvider::class) && auth()->user()->isApplicant())
             <li class="nav-item mt-3 mb-1">
                 <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">

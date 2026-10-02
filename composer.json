@@ -33,22 +33,42 @@
     },
     "autoload": {
        "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/",
+        "App\\": "app/",
+        "Database\\Factories\\": "database/factories/",
+        "Database\\Seeders\\": "database/seeders/",
 
-            "Modules\\Core\\": "Modules/Core/app/",
-            "Modules\\Core\\Database\\Factories\\": "Modules/Core/database/factories/",
-            "Modules\\Core\\Database\\Seeders\\": "Modules/Core/database/seeders/",
+        "Modules\\Core\\": "Modules/Core/app/",
+        "Modules\\Core\\Database\\Factories\\": "Modules/Core/database/factories/",
+        "Modules\\Core\\Database\\Seeders\\": "Modules/Core/database/seeders/",
 
-            "Modules\\Certificate\\": "Modules/Certificate/app/",
-            "Modules\\Citizen\\": "Modules/Citizen/app/",
-            "Modules\\Accounts\\": "Modules/Accounts/app/",
-            "Modules\\Report\\": "Modules/Report/app/",
-            "Modules\\Setting\\": "Modules/Setting/app/",
-            "Modules\\Applicant\\": "Modules/Applicant/app/",
-            "Modules\\Payment\\": "Modules/Payment/app/"
-        },
+        "Modules\\Certificate\\": "Modules/Certificate/app/",
+        "Modules\\Certificate\\Database\\Factories\\": "Modules/Certificate/database/factories/",
+        "Modules\\Certificate\\Database\\Seeders\\": "Modules/Certificate/database/seeders/",
+
+        "Modules\\Citizen\\": "Modules/Citizen/app/",
+        "Modules\\Citizen\\Database\\Factories\\": "Modules/Citizen/database/factories/",
+        "Modules\\Citizen\\Database\\Seeders\\": "Modules/Citizen/database/seeders/",
+
+        "Modules\\Accounts\\": "Modules/Accounts/app/",
+        "Modules\\Accounts\\Database\\Factories\\": "Modules/Accounts/database/factories/",
+        "Modules\\Accounts\\Database\\Seeders\\": "Modules/Accounts/database/seeders/",
+
+        "Modules\\Report\\": "Modules/Report/app/",
+        "Modules\\Report\\Database\\Factories\\": "Modules/Report/database/factories/",
+        "Modules\\Report\\Database\\Seeders\\": "Modules/Report/database/seeders/",
+
+        "Modules\\Setting\\": "Modules/Setting/app/",
+        "Modules\\Setting\\Database\\Factories\\": "Modules/Setting/database/factories/",
+        "Modules\\Setting\\Database\\Seeders\\": "Modules/Setting/database/seeders/",
+
+        "Modules\\Applicant\\": "Modules/Applicant/app/",
+        "Modules\\Applicant\\Database\\Factories\\": "Modules/Applicant/database/factories/",
+        "Modules\\Applicant\\Database\\Seeders\\": "Modules/Applicant/database/seeders/",
+
+        "Modules\\Payment\\": "Modules/Payment/app/",
+        "Modules\\Payment\\Database\\Factories\\": "Modules/Payment/database/factories/",
+        "Modules\\Payment\\Database\\Seeders\\": "Modules/Payment/database/seeders/"
+    },
         "files": [
             "app/Helpers/helpers.php"
         ]

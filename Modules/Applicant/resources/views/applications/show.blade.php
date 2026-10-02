@@ -100,18 +100,22 @@
     </div>
 
     <div class="col-md-4">
-        @if(!$application->isPaid())
+       @if(!$application->isPaid())
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-header bg-warning text-dark"><strong>পেমেন্ট প্রয়োজন</strong></div>
             <div class="card-body">
                 <p class="small mb-2">আবেদন প্রক্রিয়া শুরু করতে ফি পরিশোধ করুন।</p>
-                @if($application->payment_method === 'online')
-                    <button class="btn btn-primary w-100" disabled>
-                        <i class="bi bi-credit-card"></i> অনলাইন পেমেন্ট (শীঘ্রই)
-                    </button>
-                @else
-                    <div class="alert alert-info small">
-                        অফিসে গিয়ে {{ bangla_number(number_format($application->amount, 0)) }} টাকা পরিশোধ করুন।
+
+                <a href="{{ route('applicant.payment.show', $application) }}"
+                class="btn btn-primary w-100 mb-2">
+                    <i class="bi bi-credit-card"></i>
+                    ৳ {{ bangla_number(number_format($application->amount, 0)) }} পরিশোধ করুন
+                </a>
+
+                @if($application->payment_method === 'cash')
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-shop"></i>
+                        অথবা অফিসে গিয়ে নগদ {{ bangla_number(number_format($application->amount, 0)) }} টাকা পরিশোধ করুন।
                     </div>
                 @endif
             </div>
