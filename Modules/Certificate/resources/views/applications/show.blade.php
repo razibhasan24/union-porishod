@@ -197,7 +197,7 @@
         @endif
 
         {{-- Issued Certificate --}}
-        @if($application->issuedCertificate)
+       @if($application->issuedCertificate)
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-header bg-success text-white"><strong><i class="bi bi-award"></i> সার্টিফিকেট</strong></div>
             <div class="card-body">
@@ -206,20 +206,44 @@
                     <tr><th>ইস্যু:</th><td>{{ bangla_date($application->issuedCertificate->issue_date) }}</td></tr>
                     <tr><th>মেয়াদ:</th><td>{{ bangla_date($application->issuedCertificate->expiry_date) }}</td></tr>
                     <tr><th>প্রিন্ট:</th><td>{{ bangla_number($application->issuedCertificate->print_count) }} বার</td></tr>
+                    <tr>
+                        <th>Verification:</th>
+                        <td>
+                            <code class="small">{{ $application->issuedCertificate->verification_code }}</code>
+                        </td>
+                    </tr>
                 </table>
-                @if($application->canBePrinted())
-                    <a href="#" class="btn btn-primary btn-sm w-100">
-                        <i class="bi bi-printer"></i> প্রিন্ট করুন
+
+                <div class="d-grid gap-2">
+                    <a href="{{ route('certificate.applications.preview-pdf', $application) }}"
+                    target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-eye"></i> প্রিভিউ
                     </a>
-                @else
-                    <div class="alert alert-info small mb-0">
-                        <i class="bi bi-lock"></i>
-                        প্রিন্টের অনুমতি নেই।
-                        @if($application->print_available_at)
-                            <br>প্রিন্ট করা যাবে: {{ bangla_date($application->print_available_at) }}
-                        @endif
-                    </div>
-                @endif
+
+                    @if($application->canBePrinted())
+                        <a href="{{ route('certificate.applications.print-pdf', $application) }}"
+                        target="_blank" class="btn btn-primary btn-sm">
+                            <i class="bi bi-printer"></i> প্রিন্ট করুন
+                        </a>
+                        <a href="{{ route('certificate.applications.download-pdf', $application) }}"
+                        class="btn btn-success btn-sm">
+                            <i class="bi bi-download"></i> PDF ডাউনলোড
+                        </a>
+                    @else
+                        <div class="alert alert-info small mb-0">
+                            <i class="bi bi-lock"></i>
+                            প্রিন্টের অনুমতি নেই।
+                            @if($application->print_available_at)
+                                <br>প্রিন্ট করা যাবে: {{ bangla_date($application->print_available_at) }}
+                            @endif
+                        </div>
+                    @endif
+
+                    <a href="{{ route('verify.certificate', $application->issuedCertificate->verification_code) }}"
+                    target="_blank" class="btn btn-info btn-sm">
+                        <i class="bi bi-qr-code"></i> অনলাইনে যাচাই
+                    </a>
+                </div>
             </div>
         </div>
         @endif

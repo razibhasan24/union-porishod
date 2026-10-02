@@ -3,7 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Certificate\Http\Controllers\CertificateTypeController;
 use Modules\Certificate\Http\Controllers\CertificateApplicationController;
+use Modules\Certificate\Http\Controllers\VerificationController;
+use Modules\Certificate\Http\Controllers\PrintController;
 
+// ================== PUBLIC VERIFICATION (No auth) ==================
+Route::middleware(['web'])
+    ->name('verify.')
+    ->group(function () {
+        Route::get('verify/certificate', [VerificationController::class, 'form'])->name('form');
+        Route::get('verify/certificate/{code}', [VerificationController::class, 'verify'])->name('certificate');
+    });
+
+// ================== ADMIN ROUTES ==================
 Route::middleware(['web', 'auth'])
     ->prefix('admin')
     ->name('certificate.')
@@ -46,4 +57,14 @@ Route::middleware(['web', 'auth'])
 
         Route::post('certificate-applications/{application}/allow-print', [CertificateApplicationController::class, 'allowPrint'])
             ->name('applications.allow-print');
+
+        // ============ Print / PDF ============
+        Route::get('certificate-applications/{application}/print-pdf', [PrintController::class, 'printPdf'])
+            ->name('applications.print-pdf');
+
+        Route::get('certificate-applications/{application}/download-pdf', [PrintController::class, 'downloadPdf'])
+            ->name('applications.download-pdf');
+
+        Route::get('certificate-applications/{application}/preview-pdf', [PrintController::class, 'previewPdf'])
+            ->name('applications.preview-pdf');
     });

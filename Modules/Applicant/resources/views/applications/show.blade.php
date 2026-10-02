@@ -124,7 +124,7 @@
 
         @if($application->issuedCertificate)
         <div class="card border-0 shadow-sm mb-3">
-            <div class="card-header bg-success text-white"><strong>সার্টিফিকেট</strong></div>
+            <div class="card-header bg-success text-white"><strong><i class="bi bi-award"></i> সার্টিফিকেট</strong></div>
             <div class="card-body">
                 <table class="table table-sm">
                     <tr><th>নম্বর:</th><td><code>{{ $application->issuedCertificate->certificate_no }}</code></td></tr>
@@ -132,22 +132,29 @@
                     <tr><th>মেয়াদ:</th><td>{{ bangla_date($application->issuedCertificate->expiry_date) }}</td></tr>
                 </table>
 
-                @if($application->canBePrinted())
-                    <a href="{{ route('applicant.applications.print', $application) }}"
-                       class="btn btn-success w-100" target="_blank">
-                        <i class="bi bi-printer"></i> প্রিন্ট করুন
+                <div class="d-grid gap-2">
+                    @if($application->canBePrinted())
+                        <a href="{{ route('applicant.applications.print', $application) }}"
+                        class="btn btn-success" target="_blank">
+                            <i class="bi bi-printer"></i> প্রিন্ট করুন (PDF)
+                        </a>
+                    @else
+                        <div class="alert alert-info small mb-0">
+                            <i class="bi bi-lock"></i>
+                            প্রিন্ট করা যাবে:
+                            <strong>{{ bangla_date($application->print_available_at) }}</strong>
+                        </div>
+                        <button type="button" class="btn btn-warning btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#earlyPrintModal">
+                            <i class="bi bi-lightning"></i> তাড়াতাড়ি প্রিন্ট অনুরোধ
+                        </button>
+                    @endif
+
+                    <a href="{{ route('verify.certificate', $application->issuedCertificate->verification_code) }}"
+                    target="_blank" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-qr-code"></i> অনলাইনে যাচাই করুন
                     </a>
-                @else
-                    <div class="alert alert-info small mb-2">
-                        <i class="bi bi-lock"></i>
-                        প্রিন্ট করা যাবে:
-                        <strong>{{ bangla_date($application->print_available_at) }}</strong>
-                    </div>
-                    <button type="button" class="btn btn-warning btn-sm w-100"
-                            data-bs-toggle="modal" data-bs-target="#earlyPrintModal">
-                        <i class="bi bi-lightning"></i> তাড়াতাড়ি প্রিন্ট অনুরোধ
-                    </button>
-                @endif
+                </div>
             </div>
         </div>
         @endif

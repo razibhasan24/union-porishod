@@ -123,13 +123,15 @@ class ApplicationController extends Controller
             return back()->with('error', 'এই মুহূর্তে সার্টিফিকেট প্রিন্ট করার অনুমতি নেই।');
         }
 
-        $application->load(['certificateType', 'union', 'issuedCertificate']);
-
+        // Increment print count
         if ($application->issuedCertificate) {
             $application->issuedCertificate->incrementPrintCount('first', 'Applicant print');
         }
 
-        return view('applicant::applications.print', compact('application'));
+        // Generate and stream PDF
+        $pdfService = app(\Modules\Certificate\Services\CertificatePdfService::class);
+
+        return $pdfService->stream($application);
     }
 
     public function requestEarlyPrint(Request $request, CertificateApplication $application)
@@ -144,4 +146,5 @@ class ApplicationController extends Controller
 
         return back()->with('success', 'প্রিন্ট অনুরোধ চেয়ারম্যানের কাছে পাঠানো হয়েছে।');
     }
+   
 }
