@@ -10,17 +10,17 @@ return new class extends Migration
     {
         Schema::create('application_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_id')->constrained('certificate_applications')
+            $table->foreignId('application_id')
+                  ->constrained('certificate_applications')
                   ->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()
-                  ->constrained('users')->nullOnDelete();
-            
-            $table->string('action'); // created, submitted, paid, ward_verified, ...
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+
+            $table->string('action');
             $table->string('from_status')->nullable();
             $table->string('to_status')->nullable();
             $table->text('remarks')->nullable();
             $table->json('meta')->nullable();
-            
+
             $table->timestamps();
         });
     }

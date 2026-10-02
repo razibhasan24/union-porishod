@@ -3,20 +3,27 @@
 namespace Modules\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Core\Http\Requests\UnionRequest;
 use Modules\Core\Models\Union;
 use Modules\Core\Services\UnionService;
 use Illuminate\Support\Facades\Storage;
 
-class UnionController extends Controller
+class UnionController extends Controller implements HasMiddleware
 {
     public function __construct(
         protected UnionService $service
-    ) {
-        $this->middleware('permission:union.view')->only(['index', 'show']);
-        $this->middleware('permission:union.create')->only(['create', 'store']);
-        $this->middleware('permission:union.edit')->only(['edit', 'update']);
-        $this->middleware('permission:union.delete')->only(['destroy']);
+    ) {}
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:union.view', only: ['index', 'show']),
+            new Middleware('permission:union.create', only: ['create', 'store']),
+            new Middleware('permission:union.edit', only: ['edit', 'update']),
+            new Middleware('permission:union.delete', only: ['destroy']),
+        ];
     }
 
     public function index()

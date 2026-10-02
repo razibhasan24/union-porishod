@@ -3,19 +3,23 @@
 namespace Modules\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Core\Http\Requests\VillageRequest;
 use Modules\Core\Models\Union;
 use Modules\Core\Models\Village;
 use Modules\Core\Models\Ward;
 
-class VillageController extends Controller
+class VillageController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:village.view')->only(['index', 'show']);
-        $this->middleware('permission:village.create')->only(['create', 'store']);
-        $this->middleware('permission:village.edit')->only(['edit', 'update']);
-        $this->middleware('permission:village.delete')->only(['destroy']);
+        return [
+            new Middleware('permission:village.view', only: ['index', 'show', 'getByWard']),
+            new Middleware('permission:village.create', only: ['create', 'store']),
+            new Middleware('permission:village.edit', only: ['edit', 'update']),
+            new Middleware('permission:village.delete', only: ['destroy']),
+        ];
     }
 
     public function index()

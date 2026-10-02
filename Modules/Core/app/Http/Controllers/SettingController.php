@@ -3,14 +3,19 @@
 namespace Modules\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Core\Models\Setting;
+use Illuminate\Http\Request;
 
-class SettingController extends Controller
+class SettingController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:setting.view')->only(['index']);
-        $this->middleware('permission:setting.edit')->only(['update']);
+        return [
+            new Middleware('permission:setting.view', only: ['index']),
+            new Middleware('permission:setting.edit', only: ['update']),
+        ];
     }
 
     public function index()
@@ -23,7 +28,7 @@ class SettingController extends Controller
         return view('core::settings.index', compact('settings'));
     }
 
-    public function update(\Illuminate\Http\Request $request)
+    public function update(Request $request)
     {
         foreach ($request->except(['_token', '_method']) as $key => $value) {
             Setting::where('key', $key)->update(['value' => $value]);

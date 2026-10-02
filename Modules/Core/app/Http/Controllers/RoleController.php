@@ -3,18 +3,22 @@
 namespace Modules\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Core\Http\Requests\RoleRequest;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-class RoleController extends Controller
+class RoleController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:role.view')->only(['index', 'show']);
-        $this->middleware('permission:role.create')->only(['create', 'store']);
-        $this->middleware('permission:role.edit')->only(['edit', 'update']);
-        $this->middleware('permission:role.delete')->only(['destroy']);
+        return [
+            new Middleware('permission:role.view', only: ['index', 'show']),
+            new Middleware('permission:role.create', only: ['create', 'store']),
+            new Middleware('permission:role.edit', only: ['edit', 'update']),
+            new Middleware('permission:role.delete', only: ['destroy']),
+        ];
     }
 
     public function index()

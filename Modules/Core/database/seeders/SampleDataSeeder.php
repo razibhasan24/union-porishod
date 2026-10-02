@@ -13,7 +13,6 @@ class SampleDataSeeder extends Seeder
         $union = Union::first();
         if (!$union) return;
 
-        // Sample villages
         $villages = [
             ['ward' => 1, 'name_bn' => 'উত্তর পাড়া', 'name_en' => 'Uttar Para'],
             ['ward' => 1, 'name_bn' => 'দক্ষিণ পাড়া', 'name_en' => 'Dakshin Para'],
@@ -34,7 +33,7 @@ class SampleDataSeeder extends Seeder
                 ],
                 [
                     'name_en' => $v['name_en'],
-                    'post_office' => 'ডেমো post office',
+                    'post_office' => 'ডেমো পোস্ট অফিস',
                     'post_code' => '1234',
                 ]
             );

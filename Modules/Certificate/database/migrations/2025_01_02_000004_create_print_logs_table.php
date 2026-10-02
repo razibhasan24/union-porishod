@@ -10,16 +10,16 @@ return new class extends Migration
     {
         Schema::create('print_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('certificate_id')->constrained('issued_certificates')
+            $table->foreignId('certificate_id')
+                  ->constrained('issued_certificates')
                   ->cascadeOnDelete();
-            $table->foreignId('printed_by')->nullable()
-                  ->constrained('users')->nullOnDelete();
-            
+            $table->foreignId('printed_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->enum('print_type', ['first', 'reprint', 'duplicate'])->default('first');
             $table->text('reason')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();
-            
+
             $table->timestamps();
         });
     }

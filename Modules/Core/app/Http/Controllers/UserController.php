@@ -4,6 +4,8 @@ namespace Modules\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Core\Http\Requests\UserRequest;
 use Modules\Core\Models\Union;
 use Modules\Core\Models\Village;
@@ -12,15 +14,23 @@ use Modules\Core\Services\UserService;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
     public function __construct(
         protected UserService $service
-    ) {
-        $this->middleware('permission:user.view')->only(['index', 'show']);
-        $this->middleware('permission:user.create')->only(['create', 'store']);
-        $this->middleware('permission:user.edit')->only(['edit', 'update']);
-        $this->middleware('permission:user.delete')->only(['destroy']);
+    ) {}
+
+    /**
+     * Get the middleware that should be assigned to the controller.
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:user.view', only: ['index', 'show']),
+            new Middleware('permission:user.create', only: ['create', 'store']),
+            new Middleware('permission:user.edit', only: ['edit', 'update', 'toggleStatus']),
+            new Middleware('permission:user.delete', only: ['destroy']),
+        ];
     }
 
     public function index()

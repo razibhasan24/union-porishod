@@ -32,11 +32,15 @@
         "phpunit/phpunit": "^11.5.50"
     },
     "autoload": {
-        "psr-4": {
+       "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
+
             "Modules\\Core\\": "Modules/Core/app/",
+            "Modules\\Core\\Database\\Factories\\": "Modules/Core/database/factories/",
+            "Modules\\Core\\Database\\Seeders\\": "Modules/Core/database/seeders/",
+
             "Modules\\Certificate\\": "Modules/Certificate/app/",
             "Modules\\Citizen\\": "Modules/Citizen/app/",
             "Modules\\Accounts\\": "Modules/Accounts/app/",

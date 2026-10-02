@@ -3,19 +3,23 @@
 namespace Modules\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Core\Http\Requests\WardRequest;
 use Modules\Core\Models\Union;
 use Modules\Core\Models\Ward;
 use Illuminate\Support\Facades\Storage;
 
-class WardController extends Controller
+class WardController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:ward.view')->only(['index', 'show']);
-        $this->middleware('permission:ward.create')->only(['create', 'store']);
-        $this->middleware('permission:ward.edit')->only(['edit', 'update']);
-        $this->middleware('permission:ward.delete')->only(['destroy']);
+        return [
+            new Middleware('permission:ward.view', only: ['index', 'show']),
+            new Middleware('permission:ward.create', only: ['create', 'store']),
+            new Middleware('permission:ward.edit', only: ['edit', 'update']),
+            new Middleware('permission:ward.delete', only: ['destroy']),
+        ];
     }
 
     public function index()

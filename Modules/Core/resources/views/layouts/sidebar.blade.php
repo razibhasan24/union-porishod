@@ -295,22 +295,25 @@
         @endif
 
 
-        {{-- ================= REPORTS SECTION ================= --}}
-        @can('report.view')
-            <li class="nav-item mt-3 mb-1">
-                <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
-                    রিপোর্ট
-                </small>
-            </li>
+    {{-- ================= REPORT SECTION ================= --}}
+{{--     
+@if (\Illuminate\Support\Facades\Route::has('report.dashboard'))
+    @can('report.view')
+        <li class="nav-item mt-3 mb-1">
+            <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                রিপোর্ট
+            </small>
+        </li>
+        <li class="nav-item mb-1">
+            <a href="{{ route('report.dashboard') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.dashboard') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-graph-up me-2"></i>
+                <span>রিপোর্ট ড্যাশবোর্ড</span>
+            </a>
+        </li>
+    @endcan
+@endif --}}
 
-            <li class="nav-item mb-1">
-                <a href="{{ route('report.dashboard') }}"
-                    class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.dashboard') ? 'active bg-primary' : 'hover-bg' }}">
-                    <i class="bi bi-graph-up me-2"></i>
-                    <span>রিপোর্ট ড্যাশবোর্ড</span>
-                </a>
-            </li>
-        @endcan
 
 
         {{-- ================= MY PROFILE ================= --}}

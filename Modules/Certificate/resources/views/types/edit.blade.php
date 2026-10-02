@@ -1,0 +1,191 @@
+@extends('core::layouts.app')
+
+@section('title', 'সার্টিফিকেট ধরন সম্পাদনা')
+
+@section('content')
+<div class="d-flex justify-content-between mb-3">
+    <h4><i class="bi bi-pencil"></i> সম্পাদনা — {{ $type->name_bn }}</h4>
+    <a href="{{ route('certificate.types.index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> ফিরে যান
+    </a>
+</div>
+
+<form action="{{ route('certificate.types.update', $type) }}" method="POST">
+    @csrf @method('PUT')
+
+    <div class="row g-3">
+        <div class="col-md-8">
+            {{-- Basic Info --}}
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white"><strong>মূল তথ্য</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">ইউনিয়ন <span class="text-danger">*</span></label>
+                            <select name="union_id" class="form-select" required>
+                                @foreach($unions as $u)
+                                    <option value="{{ $u->id }}" {{ $type->union_id == $u->id ? 'selected' : '' }}>
+                                        {{ $u->name_bn }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">কোড</label>
+                            <input type="text" name="code" value="{{ old('code', $type->code) }}"
+                                   class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">নাম (বাংলা) <span class="text-danger">*</span></label>
+                            <input type="text" name="name_bn" value="{{ old('name_bn', $type->name_bn) }}"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">নাম (ইংরেজি) <span class="text-danger">*</span></label>
+                            <input type="text" name="name_en" value="{{ old('name_en', $type->name_en) }}"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">বিবরণ (বাংলা)</label>
+                            <textarea name="description_bn" class="form-control" rows="2">{{ old('description_bn', $type->description_bn) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Fee & Validity --}}
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white"><strong>ফি ও বৈধতা</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">ফি (৳) <span class="text-danger">*</span></label>
+                            <input type="number" name="fee" value="{{ old('fee', $type->fee) }}"
+                                   class="form-control" step="0.01" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">নবায়ন ফি (৳)</label>
+                            <input type="number" name="renewal_fee" value="{{ old('renewal_fee', $type->renewal_fee) }}"
+                                   class="form-control" step="0.01">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">ডুপ্লিকেট ফি (৳)</label>
+                            <input type="number" name="duplicate_fee" value="{{ old('duplicate_fee', $type->duplicate_fee) }}"
+                                   class="form-control" step="0.01">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">বৈধতার সময় (দিন) <span class="text-danger">*</span></label>
+                            <input type="number" name="validity_days" value="{{ old('validity_days', $type->validity_days) }}"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">প্রিন্ট কত দিন পর? <span class="text-danger">*</span></label>
+                            <input type="number" name="print_after_days" value="{{ old('print_after_days', $type->print_after_days) }}"
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Serial Format --}}
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white"><strong>সিরিয়াল ফরম্যাট</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">সিরিয়াল প্রিফিক্স</label>
+                            <input type="text" name="serial_prefix" value="{{ old('serial_prefix', $type->serial_prefix) }}"
+                                   class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">প্যাডিং</label>
+                            <input type="number" name="serial_padding" value="{{ old('serial_padding', $type->serial_padding) }}"
+                                   class="form-control" min="1" max="10">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Special Options --}}
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white"><strong>বিশেষ অপশন</strong></div>
+                <div class="card-body">
+                    <div class="form-check mb-2">
+                        <input type="hidden" name="is_warish" value="0">
+                        <input type="checkbox" name="is_warish" value="1" class="form-check-input"
+                               id="is_warish" {{ $type->is_warish ? 'checked' : '' }}>
+                        <label class="form-check-label" for="is_warish">ওয়ারিশ সনদ</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input type="hidden" name="requires_heirs" value="0">
+                        <input type="checkbox" name="requires_heirs" value="1" class="form-check-input"
+                               id="requires_heirs" {{ $type->requires_heirs ? 'checked' : '' }}>
+                        <label class="form-check-label" for="requires_heirs">উত্তরাধিকারী তথ্য আবশ্যক</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input type="hidden" name="requires_property" value="0">
+                        <input type="checkbox" name="requires_property" value="1" class="form-check-input"
+                               id="requires_property" {{ $type->requires_property ? 'checked' : '' }}>
+                        <label class="form-check-label" for="requires_property">সম্পত্তির তথ্য আবশ্যক</label>
+                    </div>
+                    <hr>
+                    <div class="form-check mb-2">
+                        <input type="hidden" name="needs_ward_verification" value="0">
+                        <input type="checkbox" name="needs_ward_verification" value="1" class="form-check-input"
+                               id="needs_ward_verification" {{ $type->needs_ward_verification ? 'checked' : '' }}>
+                        <label class="form-check-label" for="needs_ward_verification">ওয়ার্ড সদস্যের যাচাই</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="hidden" name="needs_chairman_approval" value="0">
+                        <input type="checkbox" name="needs_chairman_approval" value="1" class="form-check-input"
+                               id="needs_chairman_approval" {{ $type->needs_chairman_approval ? 'checked' : '' }}>
+                        <label class="form-check-label" for="needs_chairman_approval">চেয়ারম্যানের অনুমোদন</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Sidebar --}}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white"><strong>UI সেটিংস</strong></div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">আইকন</label>
+                        <input type="text" name="icon" value="{{ old('icon', $type->icon) }}" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">রঙ</label>
+                        <input type="color" name="color" value="{{ old('color', $type->color ?? '#3b82f6') }}"
+                               class="form-control form-control-color">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ক্রম</label>
+                        <input type="number" name="sort_order" value="{{ old('sort_order', $type->sort_order) }}"
+                               class="form-control">
+                    </div>
+                    <div class="form-check">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" name="is_active" value="1" class="form-check-input"
+                               id="is_active" {{ $type->is_active ? 'checked' : '' }}>
+                        <label class="form-check-label" for="is_active">সক্রিয়</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> আপডেট করুন
+                </button>
+                <a href="{{ route('certificate.types.index') }}" class="btn btn-secondary">বাতিল</a>
+            </div>
+        </div>
+    </div>
+</form>
+@endsection

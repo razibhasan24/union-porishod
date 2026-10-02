@@ -5,12 +5,13 @@ namespace Modules\Core\Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Modules\Core\Models\Union;
+use Modules\Core\Models\Ward;
 
 class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
-        // Default Union
+        // ১. Union তৈরি
         $union = Union::firstOrCreate(
             ['code' => 'DEMO-UP-001'],
             [
@@ -29,11 +30,12 @@ class SuperAdminSeeder extends Seeder
             ]
         );
 
-        // Auto-create wards if not present
+        // ২. Wards তৈরি (যদি না থাকে)
         if ($union->wards()->count() === 0) {
             $bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
             for ($i = 1; $i <= 9; $i++) {
-                $union->wards()->create([
+                Ward::create([
+                    'union_id' => $union->id,
                     'ward_no' => $i,
                     'name_bn' => "ওয়ার্ড নং " . $bn[$i],
                     'name_en' => "Ward No {$i}",
@@ -41,8 +43,8 @@ class SuperAdminSeeder extends Seeder
             }
         }
 
-        // Super Admin
-        $superAdmin = User::firstOrCreate(
+        // ৩. Super Admin তৈরি
+        $superAdmin = User::updateOrCreate(
             ['email' => 'superadmin@demo-up.gov.bd'],
             [
                 'name' => 'Super Admin',
@@ -57,8 +59,8 @@ class SuperAdminSeeder extends Seeder
         );
         $superAdmin->syncRoles(['Super Admin']);
 
-        // Chairman
-        $chairman = User::firstOrCreate(
+        // ৪. Chairman
+        $chairman = User::updateOrCreate(
             ['email' => 'chairman@demo-up.gov.bd'],
             [
                 'name' => 'Chairman',
@@ -73,8 +75,8 @@ class SuperAdminSeeder extends Seeder
         );
         $chairman->syncRoles(['Chairman']);
 
-        // Secretary
-        $secretary = User::firstOrCreate(
+        // ৫. Secretary
+        $secretary = User::updateOrCreate(
             ['email' => 'secretary@demo-up.gov.bd'],
             [
                 'name' => 'Secretary',
@@ -89,9 +91,9 @@ class SuperAdminSeeder extends Seeder
         );
         $secretary->syncRoles(['Secretary']);
 
-        // Ward Member (ward 1)
+        // ৬. Ward Member (ward 1)
         $ward1 = $union->wards()->where('ward_no', 1)->first();
-        $wardMember = User::firstOrCreate(
+        $wardMember = User::updateOrCreate(
             ['email' => 'ward1@demo-up.gov.bd'],
             [
                 'name' => 'Ward Member 1',
@@ -100,12 +102,29 @@ class SuperAdminSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'user_type' => 'ward_member',
                 'union_id' => $union->id,
-                'ward_id' => $ward1->id,
+                'ward_id' => $ward1?->id,
                 'is_active' => true,
                 'phone_verified' => true,
             ]
         );
         $wardMember->syncRoles(['Ward Member']);
+
+        // ৭. Applicant (test user)
+        $applicant = User::updateOrCreate(
+            ['email' => 'applicant@demo-up.gov.bd'],
+            [
+                'name' => 'Test Applicant',
+                'name_bn' => 'টেস্ট আবেদনকারী',
+                'phone' => '01700000005',
+                'password' => bcrypt('password'),
+                'user_type' => 'applicant',
+                'union_id' => $union->id,
+                'ward_id' => $ward1?->id,
+                'is_active' => true,
+                'phone_verified' => true,
+            ]
+        );
+        $applicant->syncRoles(['Applicant']);
 
         $this->command->info('');
         $this->command->info('====================================');
@@ -115,6 +134,7 @@ class SuperAdminSeeder extends Seeder
         $this->command->info('Chairman    : chairman@demo-up.gov.bd / password');
         $this->command->info('Secretary   : secretary@demo-up.gov.bd / password');
         $this->command->info('Ward Member : ward1@demo-up.gov.bd / password');
+        $this->command->info('Applicant   : applicant@demo-up.gov.bd / password');
         $this->command->info('====================================');
     }
 }
