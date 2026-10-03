@@ -319,15 +319,14 @@
         @endif
 
 
-    {{-- ================= REPORT SECTION ================= --}}
-{{--     
-@if (\Illuminate\Support\Facades\Route::has('report.dashboard'))
-    @can('report.view')
+    @if (\Illuminate\Support\Facades\Route::has('report.dashboard'))
+    @canany(['report.view', 'report.export'])
         <li class="nav-item mt-3 mb-1">
             <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
                 রিপোর্ট
             </small>
         </li>
+
         <li class="nav-item mb-1">
             <a href="{{ route('report.dashboard') }}"
                 class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.dashboard') ? 'active bg-primary' : 'hover-bg' }}">
@@ -335,8 +334,48 @@
                 <span>রিপোর্ট ড্যাশবোর্ড</span>
             </a>
         </li>
-    @endcan
-@endif --}}
+
+        <li class="nav-item mb-1">
+            <a href="{{ route('report.daily') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.daily') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-calendar-day me-2"></i>
+                <span>দৈনিক রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="{{ route('report.monthly') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.monthly') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-calendar-month me-2"></i>
+                <span>মাসিক রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="{{ route('report.revenue') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.revenue') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-cash-coin me-2"></i>
+                <span>আয়ের রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="{{ route('report.ward') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.ward') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-diagram-3 me-2"></i>
+                <span>ওয়ার্ড রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="{{ route('report.type') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('report.type') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                <span>ধরন রিপোর্ট</span>
+            </a>
+        </li>
+    @endcanany
+@endif
 
 
 
