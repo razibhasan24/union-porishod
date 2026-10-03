@@ -20,6 +20,7 @@ enum ApplicationStatus: string
     case DELIVERED = 'delivered';
     case EXPIRED = 'expired';
     case CANCELLED = 'cancelled';
+    case RENEWED = 'renewed';              // ← নতুন
 
     public function labelBn(): string
     {
@@ -40,6 +41,7 @@ enum ApplicationStatus: string
             self::DELIVERED => 'প্রদান করা হয়েছে',
             self::EXPIRED => 'মেয়াদ শেষ',
             self::CANCELLED => 'বাতিল',
+            self::RENEWED => 'নবায়ন হয়েছে',
         };
     }
 
@@ -56,6 +58,7 @@ enum ApplicationStatus: string
             self::CHAIRMAN_HOLD => 'warning',
             self::PRINTED, self::DELIVERED => 'success',
             self::EXPIRED => 'dark',
+            self::RENEWED => 'info',
         };
     }
 }

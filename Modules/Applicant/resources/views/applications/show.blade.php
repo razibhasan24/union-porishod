@@ -132,7 +132,7 @@
                     <tr><th>মেয়াদ:</th><td>{{ bangla_date($application->issuedCertificate->expiry_date) }}</td></tr>
                 </table>
 
-                <div class="d-grid gap-2">
+               <div class="d-grid gap-2">
                     @if($application->canBePrinted())
                         <a href="{{ route('applicant.applications.print', $application) }}"
                         class="btn btn-success" target="_blank">
@@ -150,6 +150,27 @@
                         </button>
                     @endif
 
+                    <a href="{{ route('verify.certificate', $application->issuedCertificate->verification_code) }}"
+                    target="_blank" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-qr-code"></i> অনলাইনে যাচাই করুন
+                    </a>
+
+                    {{-- Renewal Button --}}
+                    @if($application->issuedCertificate->expiry_date)
+                        @php
+                            $expired = $application->issuedCertificate->expiry_date->isPast();
+                            $expiringSoon = !$expired && now()->diffInDays($application->issuedCertificate->expiry_date) <= 30;
+                        @endphp
+
+                        @if(($expired || $expiringSoon) && $application->renewals()->whereIn('status', ['pending_payment','paid','sent_to_ward','sent_to_chairman','chairman_approved'])->count() === 0)
+                            <a href="{{ route('applicant.applications.renew', $application) }}"
+                            class="btn btn-primary btn-sm">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                {{ $expired ? 'মেয়াদ শেষ - নবায়ন করুন' : 'শীঘ্রই শেষ - নবায়ন করুন' }}
+                            </a>
+                        @endif
+                    @endif
+                </div>
                     <a href="{{ route('verify.certificate', $application->issuedCertificate->verification_code) }}"
                     target="_blank" class="btn btn-outline-info btn-sm">
                         <i class="bi bi-qr-code"></i> অনলাইনে যাচাই করুন

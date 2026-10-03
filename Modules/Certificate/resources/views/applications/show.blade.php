@@ -4,9 +4,13 @@
 
 @section('content')
 <div class="d-flex justify-content-between mb-3">
+   <div class="d-flex justify-content-between mb-3">
     <h4>
         <i class="bi bi-file-earmark-text"></i>
         আবেদন — <code>{{ $application->tracking_no }}</code>
+        @if($application->is_renewal)
+            <span class="badge bg-info">নবায়ন #{{ bangla_number($application->renewal_count) }}</span>
+        @endif
     </h4>
     <a href="{{ url()->previous() }}" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> ফিরে যান
@@ -28,6 +32,17 @@
         <small>{{ bangla_date($application->created_at) }}</small>
     </div>
 </div>
+
+{{-- Renewal Chain --}}
+@if($application->is_renewal && $application->parentApplication)
+<div class="alert alert-info small">
+    <i class="bi bi-link-45deg"></i>
+    এটি <strong>নবায়ন</strong> আবেদন। মূল আবেদন:
+    <a href="{{ route('certificate.applications.show', $application->parentApplication) }}">
+        <code>{{ $application->parentApplication->tracking_no }}</code>
+    </a>
+</div>
+@endif
 
 <div class="row g-3">
     {{-- LEFT: Info --}}

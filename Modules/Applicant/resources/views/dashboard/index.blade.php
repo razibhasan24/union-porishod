@@ -68,13 +68,35 @@
         </div>
     </div>
 </div>
+{{-- Renewal Alert --}}
+@php
+    $renewalService = app(\Modules\Certificate\Services\RenewalService::class);
+    $renewable = $renewalService->getRenewableApplications(auth()->id());
+@endphp
+
+@if($renewable->count() > 0)
+<div class="alert alert-warning d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <strong>আপনার {{ bangla_number($renewable->count()) }}টি সার্টিফিকেটের মেয়াদ শেষ হয়েছে বা শীঘ্রই শেষ হবে।</strong>
+    </div>
+    <a href="{{ route('applicant.renewals.index') }}" class="btn btn-warning btn-sm">
+        <i class="bi bi-arrow-clockwise"></i> নবায়ন করুন
+    </a>
+</div>
+@endif
 
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <strong><i class="bi bi-clock-history"></i> সাম্প্রতিক আবেদন</strong>
-        <a href="{{ route('applicant.applications.create') }}" class="btn btn-sm btn-primary">
-            <i class="bi bi-plus-circle"></i> নতুন আবেদন
-        </a>
+        <div>
+            <a href="{{ route('applicant.renewals.index') }}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-arrow-clockwise"></i> নবায়ন
+            </a>
+            <a href="{{ route('applicant.applications.create') }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle"></i> নতুন আবেদন
+            </a>
+        </div>
     </div>
     <div class="card-body">
         @forelse($recentApplications as $app)
