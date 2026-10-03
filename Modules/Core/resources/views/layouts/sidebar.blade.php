@@ -133,16 +133,47 @@
             </li>
         @endcan
 
-        @can('setting.view')
-            <li class="nav-item mb-1">
-                <a href="{{ route('core.settings.index') }}"
-                    class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('core.settings.*') ? 'active bg-primary' : 'hover-bg' }}">
-                    <i class="bi bi-gear me-2"></i>
-                    <span>সেটিংস</span>
-                </a>
-            </li>
+       @can('setting.view')
+    <li class="nav-item mb-1">
+        <a href="{{ route('core.settings.index') }}"
+            class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('core.settings.*') ? 'active bg-primary' : 'hover-bg' }}">
+            <i class="bi bi-gear me-2"></i>
+            <span>সেটিংস</span>
+        </a>
+    </li>
+@endcan
+
+@if(\Illuminate\Support\Facades\Route::has('setting.sms-logs.index'))
+    @canany(['sms.view', 'sms.send', 'sms.template'])
+        <li class="nav-item mb-1">
+            <a href="{{ route('setting.sms-logs.index') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('setting.sms-logs.*') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-chat-dots me-2"></i>
+                <span>SMS লগ</span>
+            </a>
+        </li>
+
+        @can('sms.template')
+        <li class="nav-item mb-1">
+            <a href="{{ route('setting.sms-templates.index') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('setting.sms-templates.*') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                <span>SMS টেমপ্লেট</span>
+            </a>
+        </li>
         @endcan
 
+        @can('sms.send')
+        <li class="nav-item mb-1">
+            <a href="{{ route('setting.sms-send.form') }}"
+                class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('setting.sms-send.*') ? 'active bg-primary' : 'hover-bg' }}">
+                <i class="bi bi-send me-2"></i>
+                <span>SMS পাঠান</span>
+            </a>
+        </li>
+        @endcan
+    @endcanany
+@endif
 
         {{-- ================= CERTIFICATE SECTION ================= --}}
         {{-- ভবিষ্যতে Certificate module যোগ হলে un-comment করবেন --}}

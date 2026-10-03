@@ -1,0 +1,486 @@
+<?php
+    $user = auth()->user();
+    $union = current_union();
+    $locale = app()->getLocale();
+?>
+
+<div class="position-fixed top-0 start-0 bg-dark text-white vh-100 d-flex flex-column"
+    style="width: 260px; overflow-y: auto; z-index: 1030;">
+
+    
+    <div class="text-center py-3 border-bottom border-secondary">
+        <?php if($union?->logo): ?>
+            <img src="<?php echo e(asset('storage/' . $union->logo)); ?>" alt="Logo" class="mb-2 rounded-circle bg-white p-1"
+                style="width: 55px; height: 55px; object-fit: cover;">
+        <?php else: ?>
+            <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                style="width: 55px; height: 55px;">
+                <i class="bi bi-building text-dark fs-3"></i>
+            </div>
+        <?php endif; ?>
+
+        <h6 class="text-warning mb-0 px-2">
+            <?php echo e($union?->name_bn ?? 'ইউনিয়ন পরিষদ'); ?>
+
+        </h6>
+        <small class="text-muted d-block" style="font-size: 11px;">
+            <?php echo e($union?->upazila_bn ?? ''); ?>
+
+            <?php if($union?->district_bn): ?>
+                , <?php echo e($union->district_bn); ?>
+
+            <?php endif; ?>
+        </small>
+    </div>
+
+    
+    <div class="px-3 py-3 border-bottom border-secondary">
+        <div class="d-flex align-items-center">
+            <img src="<?php echo e($user->photo_url ?? asset('images/default-avatar.png')); ?>"
+                class="rounded-circle me-2 border border-2 border-warning"
+                style="width: 42px; height: 42px; object-fit: cover;" alt="User">
+            <div class="flex-grow-1 overflow-hidden">
+                <div class="text-white fw-bold text-truncate" style="font-size: 13px;">
+                    <?php echo e($user->display_name ?? $user->name); ?>
+
+                </div>
+                <small class="text-muted d-block text-truncate" style="font-size: 11px;">
+                    <?php
+                        $userTypeLabel =
+                            \Modules\Core\Enums\UserType::tryFrom($user->user_type)?->labelBn() ?? $user->user_type;
+                    ?>
+                    <?php echo e($userTypeLabel); ?>
+
+                </small>
+            </div>
+        </div>
+    </div>
+
+    
+    <ul class="nav flex-column px-2 py-3 flex-grow-1">
+
+        
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('core.dashboard')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.dashboard') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span>ড্যাশবোর্ড</span>
+            </a>
+        </li>
+
+        
+        <?php if(auth()->user()->canany(['union.view', 'ward.view', 'village.view']) ||
+                auth()->user()->canany(['user.view', 'role.view', 'permission.view', 'setting.view'])): ?>
+            <li class="nav-item mt-3 mb-1">
+                <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                    প্রশাসন
+                </small>
+            </li>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('union.view')): ?>
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('core.unions.index')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.unions.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-building me-2"></i>
+                    <span>ইউনিয়ন</span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ward.view')): ?>
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('core.wards.index')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.wards.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-diagram-3 me-2"></i>
+                    <span>ওয়ার্ড</span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('village.view')): ?>
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('core.villages.index')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.villages.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-house-door me-2"></i>
+                    <span>গ্রাম</span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.view')): ?>
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('core.users.index')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.users.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-people me-2"></i>
+                    <span>ইউজার</span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('role.view')): ?>
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('core.roles.index')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.roles.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-shield-lock me-2"></i>
+                    <span>রোল</span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.view')): ?>
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('core.permissions.index')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.permissions.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-key me-2"></i>
+                    <span>পারমিশন</span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+       <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('setting.view')): ?>
+    <li class="nav-item mb-1">
+        <a href="<?php echo e(route('core.settings.index')); ?>"
+            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('core.settings.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+            <i class="bi bi-gear me-2"></i>
+            <span>সেটিংস</span>
+        </a>
+    </li>
+<?php endif; ?>
+
+<?php if(\Illuminate\Support\Facades\Route::has('setting.sms-logs.index')): ?>
+    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['sms.view', 'sms.send', 'sms.template'])): ?>
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('setting.sms-logs.index')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('setting.sms-logs.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-chat-dots me-2"></i>
+                <span>SMS লগ</span>
+            </a>
+        </li>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sms.template')): ?>
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('setting.sms-templates.index')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('setting.sms-templates.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                <span>SMS টেমপ্লেট</span>
+            </a>
+        </li>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sms.send')): ?>
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('setting.sms-send.form')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('setting.sms-send.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-send me-2"></i>
+                <span>SMS পাঠান</span>
+            </a>
+        </li>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; ?>
+
+        
+        
+        <?php if(class_exists(\Modules\Certificate\Models\CertificateType::class)): ?>
+            <?php if(auth()->user()->canany(['certificate_type.view', 'certificate_application.view', 'certificate.view'])): ?>
+                <li class="nav-item mt-3 mb-1">
+                    <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                        সার্টিফিকেট
+                    </small>
+                </li>
+
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('certificate_type.view')): ?>
+                    <li class="nav-item mb-1">
+                        <a href="<?php echo e(route('certificate.types.index')); ?>"
+                            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('certificate.types.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            <span>সার্টিফিকেট ধরন</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('certificate_application.view')): ?>
+                    <li class="nav-item mb-1">
+                        <a href="<?php echo e(route('certificate.applications.index')); ?>"
+                            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('certificate.applications.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                            <i class="bi bi-file-earmark-check me-2"></i>
+                            <span>আবেদন তালিকা</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if(auth()->user()->isWardMember()): ?>
+                    <li class="nav-item mb-1">
+                        <a href="<?php echo e(route('certificate.applications.pending')); ?>"
+                            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('certificate.applications.pending') ? 'active bg-warning text-dark' : 'hover-bg'); ?>">
+                            <i class="bi bi-hourglass-split me-2"></i>
+                            <span>যাচাইয়ের অপেক্ষায়</span>
+                            <?php
+                                $pendingCount = \Modules\Certificate\Models\CertificateApplication::where(
+                                    'ward_id',
+                                    auth()->user()->ward_id,
+                                )
+                                    ->where('status', 'sent_to_ward')
+                                    ->count();
+                            ?>
+                            <?php if($pendingCount > 0): ?>
+                                <span class="badge bg-danger float-end"><?php echo e(bangla_number($pendingCount)); ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if(auth()->user()->isChairman()): ?>
+                    <li class="nav-item mb-1">
+                        <a href="<?php echo e(route('certificate.applications.pending-chairman')); ?>"
+                            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('certificate.applications.pending-chairman') ? 'active bg-warning text-dark' : 'hover-bg'); ?>">
+                            <i class="bi bi-hourglass-split me-2"></i>
+                            <span>অনুমোদনের অপেক্ষায়</span>
+                            <?php
+                                $pendingApproval = \Modules\Certificate\Models\CertificateApplication::where(
+                                    'status',
+                                    'sent_to_chairman',
+                                )->count();
+                            ?>
+                            <?php if($pendingApproval > 0): ?>
+                                <span class="badge bg-danger float-end"><?php echo e(bangla_number($pendingApproval)); ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            <?php endif; ?>
+        <?php endif; ?>
+
+
+        
+        <?php if(class_exists(\Modules\Payment\Models\Payment::class)): ?>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['certificate_application.view', 'certificate_application.approve'])): ?>
+            <li class="nav-item mt-3 mb-1">
+                <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                    পেমেন্ট
+                </small>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('payment.admin.index')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('payment.admin.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-credit-card me-2"></i>
+                    <span>পেমেন্ট তালিকা</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('payment.admin.cash-entry')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('payment.admin.cash-entry') ? 'active bg-success' : 'hover-bg'); ?>">
+                    <i class="bi bi-cash-coin me-2"></i>
+                    <span>নগদ পেমেন্ট এন্ট্রি</span>
+                </a>
+            </li>
+        <?php endif; ?>
+    <?php endif; ?>
+        <?php if(class_exists(\Modules\Applicant\Providers\ApplicantServiceProvider::class) && auth()->user()->isApplicant()): ?>
+            <li class="nav-item mt-3 mb-1">
+                <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                    আমার কার্যক্রম
+                </small>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('applicant.dashboard')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('applicant.dashboard') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-speedometer me-2"></i>
+                    <span>আমার ড্যাশবোর্ড</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('applicant.applications.index')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('applicant.applications.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    <span>আমার আবেদন</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="<?php echo e(route('applicant.applications.create')); ?>"
+                    class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('applicant.applications.create') ? 'active bg-success' : 'hover-bg'); ?>">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    <span>নতুন আবেদন</span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+
+        
+        
+        <?php if(class_exists(\Modules\Accounts\Models\Account::class)): ?>
+            <?php if(auth()->user()->canany(['account.view', 'voucher.view', 'budget.view', 'report.view'])): ?>
+                <li class="nav-item mt-3 mb-1">
+                    <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                        হিসাব
+                    </small>
+                </li>
+
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('account.view')): ?>
+                    <li class="nav-item mb-1">
+                        <a href="<?php echo e(route('accounts.accounts.index')); ?>"
+                            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('accounts.accounts.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                            <i class="bi bi-journal-text me-2"></i>
+                            <span>চার্ট অফ অ্যাকাউন্টস</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('voucher.view')): ?>
+                    <li class="nav-item mb-1">
+                        <a href="<?php echo e(route('accounts.vouchers.index')); ?>"
+                            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('accounts.vouchers.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                            <i class="bi bi-receipt me-2"></i>
+                            <span>ভাউচার</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('budget.view')): ?>
+                    <li class="nav-item mb-1">
+                        <a href="<?php echo e(route('accounts.budgets.index')); ?>"
+                            class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('accounts.budgets.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                            <i class="bi bi-pie-chart me-2"></i>
+                            <span>বাজেট</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            <?php endif; ?>
+        <?php endif; ?>
+
+
+    <?php if(\Illuminate\Support\Facades\Route::has('report.dashboard')): ?>
+    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['report.view', 'report.export'])): ?>
+        <li class="nav-item mt-3 mb-1">
+            <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                রিপোর্ট
+            </small>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('report.dashboard')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('report.dashboard') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-graph-up me-2"></i>
+                <span>রিপোর্ট ড্যাশবোর্ড</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('report.daily')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('report.daily') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-calendar-day me-2"></i>
+                <span>দৈনিক রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('report.monthly')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('report.monthly') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-calendar-month me-2"></i>
+                <span>মাসিক রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('report.revenue')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('report.revenue') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-cash-coin me-2"></i>
+                <span>আয়ের রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('report.ward')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('report.ward') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-diagram-3 me-2"></i>
+                <span>ওয়ার্ড রিপোর্ট</span>
+            </a>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('report.type')); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('report.type') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                <span>ধরন রিপোর্ট</span>
+            </a>
+        </li>
+    <?php endif; ?>
+<?php endif; ?>
+
+
+
+        
+        <li class="nav-item mt-3 mb-1">
+            <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                ব্যক্তিগত
+            </small>
+        </li>
+
+        <li class="nav-item mb-1">
+            <a href="<?php echo e(route('profile.edit') ?? '#'); ?>"
+                class="nav-link text-white rounded px-3 py-2 <?php echo e(request()->routeIs('profile.*') ? 'active bg-primary' : 'hover-bg'); ?>">
+                <i class="bi bi-person me-2"></i>
+                <span>আমার প্রোফাইল</span>
+            </a>
+        </li>
+
+    </ul>
+
+    
+    <div class="border-top border-secondary p-3 mt-auto">
+        <form method="POST" action="<?php echo e(route('logout')); ?>">
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                <i class="bi bi-box-arrow-right me-1"></i> লগআউট
+            </button>
+        </form>
+
+        <div class="text-center mt-2">
+            <small class="text-muted" style="font-size: 10px;">
+                &copy; <?php echo e(date('Y')); ?> <?php echo e($union?->name_bn ?? 'ইউনিয়ন পরিষদ'); ?>
+
+            </small>
+        </div>
+    </div>
+
+</div>
+
+
+<?php $__env->startPush('styles'); ?>
+    <style>
+        .hover-bg {
+            transition: all 0.2s ease;
+        }
+
+        .hover-bg:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            transform: translateX(3px);
+        }
+
+        .nav-link.active {
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.4);
+        }
+
+        /* Scrollbar beautify */
+        .position-fixed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .position-fixed::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .position-fixed::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+<?php $__env->stopPush(); ?>
+<?php /**PATH R:\xampp\htdocs\union-porishod\Modules/Core\resources/views/layouts/sidebar.blade.php ENDPATH**/ ?>
