@@ -20,7 +20,7 @@ class CertificateApplicationController extends Controller implements HasMiddlewa
     {
         return [
             new Middleware('permission:certificate_application.view', only: [
-                'index', 'show', 'pendingForWard', 'pendingForChairman',
+                'index', 'show', 'pendingForChairman',
             ]),
             new Middleware('permission:certificate_application.approve', only: [
                 'wardRecommend', 'chairmanApprove', 'allowPrint',
@@ -60,7 +60,11 @@ class CertificateApplicationController extends Controller implements HasMiddlewa
     {
         $applications = CertificateApplication::with(['applicant', 'certificateType'])
             ->where('ward_id', auth()->user()->ward_id)
-            ->where('status', ApplicationStatus::SENT_TO_WARD)
+            ->whereIn('status', [
+                ApplicationStatus::SENT_TO_WARD,
+                ApplicationStatus::PAID,           // ← পুরনো আবেদনের জন্য fallback
+                ApplicationStatus::WARD_VERIFIED,  // ← যাচাই করা
+            ])
             ->latest()
             ->paginate(20);
 

@@ -50,44 +50,102 @@ class CertificatePdfService
     /**
      * Build the PDF instance
      */
+
     protected function build(CertificateApplication $application)
-    {
-        $application->load([
-            'union', 'ward', 'village', 'applicant',
-            'certificateType', 'issuedCertificate',
-        ]);
+{
+    $application->load([
+        'union', 'ward', 'village', 'applicant',
+        'certificateType', 'issuedCertificate',
+    ]);
 
-        $certificate = $application->issuedCertificate;
+    $certificate = $application->issuedCertificate;
 
-        // Generate QR code
-        $qrCode = null;
-        if ($certificate && $certificate->verification_code) {
-            $qrCode = $this->qrService->generateForCertificate($certificate->verification_code);
-        }
-
-        $data = [
-            'application' => $application,
-            'certificate' => $certificate,
-            'union' => $application->union,
-            'ward' => $application->ward,
-            'type' => $application->certificateType,
-            'qrCode' => $qrCode,
-            'generatedAt' => now(),
-        ];
-
-        // Pick template based on certificate type
-        $template = $this->getTemplate($application);
-
-        $pdf = Pdf::loadView($template, $data);
-        $pdf->setPaper('A4', 'portrait');
-        $pdf->setOptions([
-            'isRemoteEnabled' => true,
-            'isHtml5ParserEnabled' => true,
-            'defaultFont' => 'DejaVu Sans',
-        ]);
-
-        return $pdf;
+    // Generate QR code (SVG)
+    $qrCode = null;
+    $qrSvg = null;
+    if ($certificate && $certificate->verification_code) {
+        $qrCode = $this->qrService->generateForCertificate($certificate->verification_code);
+        $qrSvg = $this->qrService->generateSvg(
+            route('verify.certificate', ['code' => $certificate->verification_code]),
+            120
+        );
     }
+
+    $data = [
+        'application' => $application,
+        'certificate' => $certificate,
+        'union' => $application->union,
+        'ward' => $application->ward,
+        'type' => $application->certificateType,
+        'qrCode' => $qrCode,
+        'qrSvg' => $qrSvg,
+        'generatedAt' => now(),
+    ];
+
+    $template = $this->getTemplate($application);
+
+    $pdf = Pdf::loadView($template, $data);
+    $pdf->setPaper('A4', 'portrait');
+
+    // ============ CRITICAL: FONT CONFIGURATION ============
+  $pdf->setOptions([
+    'isRemoteEnabled' => true,
+    'isHtml5ParserEnabled' => true,
+    'isFontSubsettingEnabled' => true,
+    'defaultFont' => 'SolaimanLipi',              // ← এই নাম
+    'fontDir' => storage_path('fonts'),
+    'fontCache' => storage_path('fonts'),
+    'tempDir' => storage_path('app'),
+    'chroot' => [
+        base_path(),
+        storage_path('app/public'),
+        storage_path('fonts'),
+    ],
+    'dpi' => 96,
+]);
+
+    return $pdf;
+}
+
+
+    // protected function build(CertificateApplication $application)
+    // {
+    //     $application->load([
+    //         'union', 'ward', 'village', 'applicant',
+    //         'certificateType', 'issuedCertificate',
+    //     ]);
+
+    //     $certificate = $application->issuedCertificate;
+
+    //     // Generate QR code
+    //     $qrCode = null;
+    //     if ($certificate && $certificate->verification_code) {
+    //         $qrCode = $this->qrService->generateForCertificate($certificate->verification_code);
+    //     }
+
+    //     $data = [
+    //         'application' => $application,
+    //         'certificate' => $certificate,
+    //         'union' => $application->union,
+    //         'ward' => $application->ward,
+    //         'type' => $application->certificateType,
+    //         'qrCode' => $qrCode,
+    //         'generatedAt' => now(),
+    //     ];
+
+    //     // Pick template based on certificate type
+    //     $template = $this->getTemplate($application);
+
+    //     $pdf = Pdf::loadView($template, $data);
+    //     $pdf->setPaper('A4', 'portrait');
+    //     $pdf->setOptions([
+    //         'isRemoteEnabled' => true,
+    //         'isHtml5ParserEnabled' => true,
+    //         'defaultFont' => 'DejaVu Sans',
+    //     ]);
+
+    //     return $pdf;
+    // }
 
     /**
      * Choose template file

@@ -52,6 +52,7 @@ class ApplicationController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'certificate_type_id' => 'required|exists:certificate_types,id',
             'ward_id' => 'required|exists:wards,id',
@@ -60,6 +61,7 @@ class ApplicationController extends Controller
             'father_name' => 'nullable|string|max:255',
             'mother_name' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:500',
+            'applicant_phone' => 'required|string|max:20',
             'payment_method' => 'required|in:online,cash',
             'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
@@ -146,5 +148,5 @@ class ApplicationController extends Controller
 
         return back()->with('success', 'প্রিন্ট অনুরোধ চেয়ারম্যানের কাছে পাঠানো হয়েছে।');
     }
-   
+
 }

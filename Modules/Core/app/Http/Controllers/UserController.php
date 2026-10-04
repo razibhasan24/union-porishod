@@ -66,6 +66,7 @@ class UserController extends Controller implements HasMiddleware
 
     public function store(UserRequest $request)
     {
+        // dd($request->all());
         $data = $request->validated();
 
         if ($request->hasFile('photo')) {

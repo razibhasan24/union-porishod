@@ -34,7 +34,7 @@ class ApplicationService
                 'applicant_name_bn' => $user->name_bn ?? $user->name,
                 'applicant_name_en' => $user->name,
                 'applicant_nid' => $user->nid,
-                'applicant_phone' => $user->phone,
+                'applicant_phone' => $data['applicant_phone'],
                 'applicant_address' => $data['address'] ?? null,
                 'applicant_father_name' => $data['father_name'] ?? null,
                 'applicant_mother_name' => $data['mother_name'] ?? null,

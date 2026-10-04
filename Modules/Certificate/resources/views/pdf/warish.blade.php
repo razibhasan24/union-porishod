@@ -4,148 +4,272 @@
     <meta charset="UTF-8">
     <title>{{ $type->name_bn }}</title>
     <style>
-        @page { margin: 15mm; }
-        body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 12px;
-            line-height: 1.7;
-            color: #000;
+        @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+html, body {
+    width: 190mm;
+    height: 281mm;
+    font-family: 'SolaimanLipi', 'DejaVu Sans', sans-serif;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #000;
+    background: white;
+}
+
         .container {
-            border: 6px double #8b5cf6;
-            padding: 25px;
+            width: 100%;
+            height: 100%;
+            border: 5px double #8b5cf6;
+            padding: 7mm 9mm;
+            position: relative;
+            page-break-inside: avoid;
+            page-break-after: avoid;
+            overflow: hidden;
         }
+
+        .watermark {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            margin-left: -150px;
+            margin-top: -60px;
+            width: 300px;
+            text-align: center;
+            font-size: 70px;
+            color: rgba(139, 92, 246, 0.05);
+            font-weight: bold;
+            z-index: 0;
+            transform: rotate(-30deg);
+            white-space: nowrap;
+        }
+
         .header {
             text-align: center;
-            border-bottom: 3px solid #8b5cf6;
-            padding-bottom: 12px;
-            margin-bottom: 15px;
+            padding-bottom: 7px;
+            border-bottom: 2px solid #8b5cf6;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 3px;
+        }
+
         .union-name {
-            font-size: 24px;
+            font-size: 21px;
             font-weight: bold;
             color: #8b5cf6;
-            margin: 5px 0;
+            margin: 3px 0;
         }
+
+        .union-address {
+            font-size: 10px;
+            color: #555;
+            line-height: 1.4;
+        }
+
         .cert-title {
-            font-size: 20px;
+            font-size: 17px;
             font-weight: bold;
             text-align: center;
             color: #8b5cf6;
-            margin: 20px 0;
+            margin: 10px 0 8px 0;
             text-decoration: underline;
+            text-underline-offset: 3px;
+            position: relative;
+            z-index: 1;
         }
+
         .cert-no {
             background: #f3e8ff;
-            padding: 8px 12px;
+            padding: 5px 10px;
             border: 1px solid #8b5cf6;
-            margin: 12px 0;
+            margin: 8px 0;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 10.5px;
+            text-align: center;
+            border-radius: 3px;
+            position: relative;
+            z-index: 1;
         }
+
         .section-title {
             background: #8b5cf6;
             color: white;
-            padding: 5px 10px;
+            padding: 4px 10px;
             font-weight: bold;
-            margin: 15px 0 8px 0;
-            font-size: 13px;
+            margin: 10px 0 5px 0;
+            font-size: 11.5px;
+            border-radius: 3px;
+            position: relative;
+            z-index: 1;
         }
+
         .info-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
         }
+
         .info-table th,
         .info-table td {
             border: 1px solid #999;
-            padding: 5px 8px;
-            font-size: 11px;
+            padding: 4px 7px;
+            font-size: 10.5px;
         }
+
         .info-table th {
             background: #f0f0f0;
             font-weight: bold;
             text-align: left;
+            width: 30%;
         }
+
+        .info-table thead th {
+            background: #8b5cf6;
+            color: white;
+            text-align: center;
+            width: auto;
+        }
+
         .body-text {
-            font-size: 13px;
+            font-size: 11.5px;
             text-align: justify;
-            line-height: 2;
-            margin: 12px 0;
+            line-height: 1.7;
+            margin: 8px 0;
+            position: relative;
+            z-index: 1;
         }
+
+        .qr-section {
+            margin-top: 10px;
+            text-align: center;
+            padding-top: 6px;
+            border-top: 1px dashed #999;
+            position: relative;
+            z-index: 1;
+        }
+
+        .qr-box {
+            width: 85px;
+            height: 85px;
+            display: inline-block;
+            padding: 3px;
+            background: white;
+            border: 1px solid #ddd;
+        }
+
+        .qr-box svg,
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-section p {
+            font-size: 8.5px;
+            color: #666;
+            margin: 2px 0 0 0;
+        }
+
+        .verification-code {
+            font-family: 'Courier New', monospace;
+            font-size: 9.5px;
+            color: #8b5cf6;
+            font-weight: bold;
+        }
+
         .footer-sign {
             width: 100%;
-            margin-top: 40px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
         }
+
         .footer-sign td {
             text-align: center;
             width: 50%;
-            padding: 0 15px;
+            padding: 0 12px;
+            vertical-align: bottom;
         }
+
         .sign-line {
-            border-top: 2px solid #000;
-            padding-top: 5px;
-            margin-top: 45px;
-            font-size: 11px;
+            border-top: 1.5px solid #000;
+            padding-top: 4px;
+            margin-top: 35px;
+            font-size: 10.5px;
+            line-height: 1.4;
         }
-        .qr-section {
-            margin-top: 20px;
+
+        .cert-footer {
             text-align: center;
-            padding-top: 12px;
-            border-top: 1px dashed #999;
+            font-size: 8.5px;
+            color: #888;
+            margin-top: 10px;
+            padding-top: 5px;
+            border-top: 1px dashed #ddd;
+            position: relative;
+            z-index: 1;
         }
-        .qr-section img {
-            width: 80px;
-            height: 80px;
-        }
-        .qr-section p {
-            font-size: 9px;
-            color: #666;
-            margin: 2px 0;
-        }
-        .verification-code {
-            font-family: monospace;
-            font-size: 10px;
-            color: #8b5cf6;
-            font-weight: bold;
+
+        @media print {
+            .container {
+                page-break-after: avoid;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="watermark">{{ $union->name_bn ?? 'ইউনিয়ন পরিষদ' }}</div>
+
         {{-- Header --}}
         <div class="header">
             @if($union?->logo && file_exists(storage_path('app/public/' . $union->logo)))
-                <img src="{{ storage_path('app/public/' . $union->logo) }}" width="70" height="70" alt="Logo">
+                <img src="{{ storage_path('app/public/' . $union->logo) }}" class="logo" alt="Logo">
             @endif
             <div class="union-name">{{ $union->name_bn ?? 'ইউনিয়ন পরিষদ' }}</div>
-            <div style="font-size: 11px; color: #555;">
+            <div class="union-address">
                 {{ $union->upazila_bn ?? '' }}
                 @if($union?->district_bn), {{ $union->district_bn }}@endif
-                <br>
-                @if($union?->phone) ফোন: {{ $union->phone }} @endif
+                @if($union?->phone) | ফোন: {{ $union->phone }}@endif
             </div>
         </div>
 
         {{-- Title --}}
         <div class="cert-title">{{ $type->name_bn ?? 'ওয়ারিশ সনদ' }}</div>
 
-        {{-- Certificate Number --}}
+        {{-- Cert Number --}}
         <div class="cert-no">
-            সার্টিফিকেট নম্বর: {{ $certificate->certificate_no ?? '-' }} |
-            ইস্যু তারিখ: {{ bangla_date($certificate->issue_date ?? now()) }}
+            নম্বর: {{ $certificate->certificate_no ?? '-' }}
+            | ইস্যু: {{ bangla_date($certificate->issue_date ?? now()) }}
             @if($certificate?->expiry_date)
-                | মেয়াদ শেষ: {{ bangla_date($certificate->expiry_date) }}
+                | মেয়াদ: {{ bangla_date($certificate->expiry_date) }}
             @endif
         </div>
 
         {{-- মৃত ব্যক্তির তথ্য --}}
         @php $deceased = $application->deceased_info ?? []; @endphp
-        @if(!empty($deceased))
+        @if(!empty($deceased) && !empty($deceased['name']))
         <div class="section-title">মৃত ব্যক্তির তথ্য</div>
         <table class="info-table">
             <tr>
-                <th width="30%">নাম</th>
+                <th>নাম</th>
                 <td>{{ $deceased['name'] ?? '-' }}</td>
             </tr>
             @if(!empty($deceased['father']))
@@ -181,42 +305,45 @@
         </table>
         @endif
 
-        {{-- উত্তরাধিকারীদের তালিকা --}}
+        {{-- উত্তরাধিকারী --}}
         @if(!empty($application->heirs) && is_array($application->heirs))
-        <div class="section-title">উত্তরাধিকারীবৃন্দের তালিকা</div>
+        @php
+            $validHeirs = array_filter($application->heirs, fn($h) => !empty($h['name']));
+        @endphp
+        @if(count($validHeirs) > 0)
+        <div class="section-title">উত্তরাধিকারীবৃন্দ</div>
         <table class="info-table">
             <thead>
                 <tr>
-                    <th width="5%">ক্রম</th>
-                    <th width="30%">নাম</th>
-                    <th width="20%">সম্পর্ক</th>
-                    <th width="10%">বয়স</th>
-                    <th width="35%">NID / জন্ম সনদ নম্বর</th>
+                    <th style="width: 8%;">ক্রম</th>
+                    <th style="width: 30%;">নাম</th>
+                    <th style="width: 22%;">সম্পর্ক</th>
+                    <th style="width: 12%;">বয়স</th>
+                    <th style="width: 28%;">NID / জন্ম সনদ</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($application->heirs as $i => $heir)
-                @if(!empty($heir['name']))
+                @foreach($validHeirs as $i => $heir)
                 <tr>
                     <td style="text-align: center;">{{ bangla_number($i + 1) }}</td>
                     <td>{{ $heir['name'] }}</td>
                     <td>{{ $heir['relation'] ?? '-' }}</td>
-                    <td>{{ !empty($heir['age']) ? bangla_number($heir['age']) : '-' }}</td>
+                    <td style="text-align: center;">{{ !empty($heir['age']) ? bangla_number($heir['age']) : '-' }}</td>
                     <td>{{ $heir['nid'] ?? $heir['certificate_no'] ?? '-' }}</td>
                 </tr>
-                @endif
                 @endforeach
             </tbody>
         </table>
         @endif
+        @endif
 
-        {{-- সম্পত্তির তথ্য --}}
+        {{-- সম্পত্তি --}}
         @php $property = $application->property_info ?? []; @endphp
         @if(!empty($property) && !empty($property['description']))
         <div class="section-title">সম্পত্তির তথ্য</div>
         <table class="info-table">
             <tr>
-                <th width="30%">বিবরণ</th>
+                <th>বিবরণ</th>
                 <td>{{ $property['description'] }}</td>
             </tr>
             @if(!empty($property['location']))
@@ -238,23 +365,29 @@
         <div class="body-text">
             উপরিউক্ত মৃত ব্যক্তির বৈধ উত্তরাধিকারীবৃন্দ উল্লেখিত তালিকা অনুযায়ী
             {{ $union->name_bn ?? 'এই ইউনিয়ন পরিষদ' }}-এর বাসিন্দা। আমার জানামতে
-            তাহাদের মধ্যে কোন পারিবারিক বিরোধ নেই এবং তাঁহারা এই সনদ প্রাপ্তির জন্য বৈধ দাবিদার।
+            তাহাদের মধ্যে কোন পারিবারিক বিরোধ নেই এবং তাঁহারা এই সনদ প্রাপ্তির বৈধ দাবিদার।
             <br><br>
             এই সনদ
             @if($type->validity_days)
-                {{ bangla_number($type->validity_days) }} দিন
+                <strong>{{ bangla_number($type->validity_days) }} দিন</strong>
             @else
-                ৯০ দিন
+                <strong>৯০ দিন</strong>
             @endif
             পর্যন্ত বৈধ থাকবে।
         </div>
 
         {{-- QR --}}
-        @if($qrCode)
+        @if(isset($qrSvg) && $qrSvg)
         <div class="qr-section">
-            <img src="{{ $qrCode }}" alt="QR Code">
+            <div class="qr-box">{!! $qrSvg !!}</div>
             <p>QR কোড স্ক্যান করে সনদটি যাচাই করুন</p>
-            <p class="verification-code">{{ $certificate->verification_code ?? '-' }}</p>
+            <p class="verification-code">{{ $certificate->verification_code ?? '' }}</p>
+        </div>
+        @elseif(isset($qrCode) && $qrCode)
+        <div class="qr-section">
+            <div class="qr-box"><img src="{{ $qrCode }}" alt="QR"></div>
+            <p>QR কোড স্ক্যান করে সনদটি যাচাই করুন</p>
+            <p class="verification-code">{{ $certificate->verification_code ?? '' }}</p>
         </div>
         @endif
 
@@ -263,22 +396,20 @@
             <tr>
                 <td>
                     <div class="sign-line">
-                        ওয়ার্ড সদস্য<br>
-                        {{ $application->ward->member_name_bn ?? '' }}<br>
-                        {{ $application->ward->name_bn ?? '' }}
+                        {{ $application->ward->member_name_bn ?? 'ওয়ার্ড সদস্য' }}<br>
+                        <small>ওয়ার্ড সদস্য, {{ $application->ward->name_bn ?? '' }}</small>
                     </div>
                 </td>
                 <td>
                     <div class="sign-line">
-                        চেয়ারম্যান<br>
                         <strong>{{ $union->chairman_name_bn ?? 'চেয়ারম্যান' }}</strong><br>
-                        {{ $union->name_bn ?? '' }}
+                        <small>চেয়ারম্যান, {{ $union->name_bn ?? '' }}</small>
                     </div>
                 </td>
             </tr>
         </table>
 
-        <div style="text-align: center; margin-top: 20px; font-size: 9px; color: #666;">
+        <div class="cert-footer">
             ডিজিটালি তৈরি: {{ bangla_date($generatedAt) }} | ট্র্যাকিং: {{ $application->tracking_no }}
         </div>
     </div>

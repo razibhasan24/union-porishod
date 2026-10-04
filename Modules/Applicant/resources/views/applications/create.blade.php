@@ -80,7 +80,12 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-12">
+                        <div class="col-6">
+                            <label class="form-label"> আবেদনকারীর মোবাইল</label>
+                            <input type="number" name="applicant_phone" value="{{ old('applicant_phone') }}"
+                                   class="form-control">
+                        </div>
+                        <div class="col-6">
                             <label class="form-label">ঠিকানা</label>
                             <input type="text" name="address" value="{{ old('address') }}"
                                    class="form-control">

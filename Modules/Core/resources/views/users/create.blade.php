@@ -5,6 +5,22 @@
     <h4>নতুন ইউজার</h4>
     <a href="{{ route('core.users.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> ফিরে যান</a>
 </div>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <strong>অনুগ্রহ করে নিচের সমস্যাগুলো ঠিক করুন:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 
 <form action="{{ route('core.users.store') }}" method="POST" enctype="multipart/form-data">
     @csrf

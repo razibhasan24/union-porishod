@@ -1,39 +1,68 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
+@extends('layouts.guest')
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+@section('title', 'নতুন পাসওয়ার্ড')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+<div class="text-center mb-4">
+    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+         style="width: 75px; height: 75px;">
+        <i class="bi bi-shield-lock text-primary" style="font-size: 40px;"></i>
+    </div>
+    <h3 class="fw-bold mb-1">নতুন পাসওয়ার্ড সেট করুন</h3>
+    <p class="text-muted">নিরাপদ পাসওয়ার্ড দিন</p>
+</div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+@if ($errors->any())
+    <div class="alert alert-danger mb-3">
+        @foreach ($errors->all() as $error)
+            <i class="bi bi-exclamation-circle"></i> {{ $error }}<br>
+        @endforeach
+    </div>
+@endif
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+<form method="POST" action="{{ route('password.store') }}">
+    @csrf
+    <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
+    <div class="mb-3">
+        <label for="email" class="form-label">
+            <i class="bi bi-envelope"></i> ইমেইল
+        </label>
+        <input type="email"
+               id="email"
+               name="email"
+               value="{{ old('email', $request->email) }}"
+               class="form-control"
+               required
+               readonly>
+    </div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">
+            <i class="bi bi-lock"></i> নতুন পাসওয়ার্ড
+        </label>
+        <input type="password"
+               id="password"
+               name="password"
+               class="form-control"
+               placeholder="কমপক্ষে ৮ অক্ষর"
+               required>
+    </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    <div class="mb-3">
+        <label for="password_confirmation" class="form-label">
+            <i class="bi bi-lock-fill"></i> নিশ্চিত করুন
+        </label>
+        <input type="password"
+               id="password_confirmation"
+               name="password_confirmation"
+               class="form-control"
+               placeholder="আবার লিখুন"
+               required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+        <i class="bi bi-check-circle"></i> পাসওয়ার্ড রিসেট করুন
+    </button>
+</form>
+@endsection

@@ -175,79 +175,95 @@
     @endcanany
 @endif
 
-        {{-- ================= CERTIFICATE SECTION ================= --}}
-        {{-- ভবিষ্যতে Certificate module যোগ হলে un-comment করবেন --}}
-        @if (class_exists(\Modules\Certificate\Models\CertificateType::class))
-            @if (auth()->user()->canany(['certificate_type.view', 'certificate_application.view', 'certificate.view']))
-                <li class="nav-item mt-3 mb-1">
-                    <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
-                        সার্টিফিকেট
-                    </small>
-                </li>
+       {{-- ================= CERTIFICATE SECTION ================= --}}
+@php
+    $certUser = auth()->user();
+    $certIsSuperAdmin = $certUser->user_type === 'super_admin';
+    $certIsChairman = $certUser->user_type === 'chairman';
+    $certIsWardMember = $certUser->user_type === 'ward_member';
+    $certCanViewTypes = $certIsSuperAdmin || $certUser->can('certificate_type.view');
+    $certCanViewApps = $certIsSuperAdmin || ($certUser->can('certificate_application.view') && !$certIsWardMember);
+@endphp
 
-                @can('certificate_type.view')
-                    <li class="nav-item mb-1">
-                        <a href="{{ route('certificate.types.index') }}"
-                            class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.types.*') ? 'active bg-primary' : 'hover-bg' }}">
-                            <i class="bi bi-file-earmark-text me-2"></i>
-                            <span>সার্টিফিকেট ধরন</span>
-                        </a>
-                    </li>
-                @endcan
+@if (class_exists(\Modules\Certificate\Models\CertificateType::class))
+    @if ($certCanViewTypes || $certCanViewApps || $certIsWardMember || $certIsChairman || $certIsSuperAdmin)
 
-                @can('certificate_application.view')
-                    <li class="nav-item mb-1">
-                        <a href="{{ route('certificate.applications.index') }}"
-                            class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.applications.*') ? 'active bg-primary' : 'hover-bg' }}">
-                            <i class="bi bi-file-earmark-check me-2"></i>
-                            <span>আবেদন তালিকা</span>
-                        </a>
-                    </li>
-                @endcan
+        <li class="nav-item mt-3 mb-1">
+            <small class="text-uppercase text-muted px-3" style="font-size: 10px; letter-spacing: 1px;">
+                সার্টিফিকেট
+            </small>
+        </li>
 
-                @if (auth()->user()->isWardMember())
-                    <li class="nav-item mb-1">
-                        <a href="{{ route('certificate.applications.pending') }}"
-                            class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.applications.pending') ? 'active bg-warning text-dark' : 'hover-bg' }}">
-                            <i class="bi bi-hourglass-split me-2"></i>
-                            <span>যাচাইয়ের অপেক্ষায়</span>
-                            @php
-                                $pendingCount = \Modules\Certificate\Models\CertificateApplication::where(
-                                    'ward_id',
-                                    auth()->user()->ward_id,
-                                )
-                                    ->where('status', 'sent_to_ward')
-                                    ->count();
-                            @endphp
-                            @if ($pendingCount > 0)
-                                <span class="badge bg-danger float-end">{{ bangla_number($pendingCount) }}</span>
-                            @endif
-                        </a>
-                    </li>
-                @endif
-
-                @if (auth()->user()->isChairman())
-                    <li class="nav-item mb-1">
-                        <a href="{{ route('certificate.applications.pending-chairman') }}"
-                            class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.applications.pending-chairman') ? 'active bg-warning text-dark' : 'hover-bg' }}">
-                            <i class="bi bi-hourglass-split me-2"></i>
-                            <span>অনুমোদনের অপেক্ষায়</span>
-                            @php
-                                $pendingApproval = \Modules\Certificate\Models\CertificateApplication::where(
-                                    'status',
-                                    'sent_to_chairman',
-                                )->count();
-                            @endphp
-                            @if ($pendingApproval > 0)
-                                <span class="badge bg-danger float-end">{{ bangla_number($pendingApproval) }}</span>
-                            @endif
-                        </a>
-                    </li>
-                @endif
-            @endif
+        {{-- Certificate Types --}}
+        @if ($certCanViewTypes)
+            <li class="nav-item mb-1">
+                <a href="{{ route('certificate.types.index') }}"
+                    class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.types.*') ? 'active bg-primary' : 'hover-bg' }}">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    <span>সার্টিফিকেট ধরন</span>
+                </a>
+            </li>
         @endif
 
+        {{-- All Applications (not for Ward Member) --}}
+        @if ($certCanViewApps)
+            <li class="nav-item mb-1">
+                <a href="{{ route('certificate.applications.index') }}"
+                    class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.applications.index') ? 'active bg-primary' : 'hover-bg' }}">
+                    <i class="bi bi-file-earmark-check me-2"></i>
+                    <span>আবেদন তালিকা</span>
+                </a>
+            </li>
+        @endif
 
+        {{-- Ward Member: Pending Verification --}}
+        @if ($certIsWardMember || $certIsSuperAdmin)
+            @php
+                $wardQ = \Modules\Certificate\Models\CertificateApplication::where('status', 'sent_to_ward');
+                if ($certIsWardMember) {
+                    $wardQ->where('ward_id', $certUser->ward_id);
+                }
+                $wardPending = $wardQ->count();
+                $wardUrl = $certIsWardMember
+                    ? route('certificate.applications.pending')
+                    : route('certificate.applications.index', ['status' => 'sent_to_ward']);
+            @endphp
+
+            <li class="nav-item mb-1">
+                <a href="{{ $wardUrl }}"
+                    class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.applications.pending') ? 'active bg-warning text-dark' : 'hover-bg' }}">
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    <span>যাচাইয়ের অপেক্ষায়</span>
+                    @if ($wardPending > 0)
+                        <span class="badge bg-danger float-end">{{ bangla_number($wardPending) }}</span>
+                    @endif
+                </a>
+            </li>
+        @endif
+
+        {{-- Chairman: Pending Approval --}}
+        @if ($certIsChairman || $certIsSuperAdmin)
+            @php
+                $chairPending = \Modules\Certificate\Models\CertificateApplication::where('status', 'sent_to_chairman')->count();
+                $chairUrl = $certIsChairman
+                    ? route('certificate.applications.pending-chairman')
+                    : route('certificate.applications.index', ['status' => 'sent_to_chairman']);
+            @endphp
+
+            <li class="nav-item mb-1">
+                <a href="{{ $chairUrl }}"
+                    class="nav-link text-white rounded px-3 py-2 {{ request()->routeIs('certificate.applications.pending-chairman') ? 'active bg-warning text-dark' : 'hover-bg' }}">
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    <span>অনুমোদনের অপেক্ষায়</span>
+                    @if ($chairPending > 0)
+                        <span class="badge bg-danger float-end">{{ bangla_number($chairPending) }}</span>
+                    @endif
+                </a>
+            </li>
+        @endif
+
+    @endif
+@endif
         {{-- ================= APPLICANT SECTION ================= --}}
         @if (class_exists(\Modules\Payment\Models\Payment::class))
         @canany(['certificate_application.view', 'certificate_application.approve'])

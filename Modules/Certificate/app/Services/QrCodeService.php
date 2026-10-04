@@ -2,22 +2,30 @@
 
 namespace Modules\Certificate\Services;
 
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 
 class QrCodeService
 {
     /**
-     * Generate QR code as base64 PNG
+     * Generate QR code as base64 SVG (Imagick ছাড়াই কাজ করে)
      */
     public function generateBase64(string $content, int $size = 200): string
     {
-        $png = QrCode::format('png')
-            ->size($size)
-            ->margin(1)
-            ->errorCorrection('H')
-            ->generate($content);
+        try {
+            $svg = $this->generateSvg($content, $size);
 
-        return 'data:image/png;base64,' . base64_encode($png);
+            if (empty($svg)) {
+                return '';
+            }
+
+            return 'data:image/svg+xml;base64,' . base64_encode($svg);
+        } catch (\Throwable $e) {
+            \Log::error('QR Code generateBase64 failed: ' . $e->getMessage());
+            return '';
+        }
     }
 
     /**
@@ -30,18 +38,43 @@ class QrCodeService
     }
 
     /**
-     * Save QR code to storage
+     * Generate raw SVG string (for inline PDF rendering)
+     */
+    public function generateSvg(string $content, int $size = 200): string
+    {
+        try {
+            $renderer = new ImageRenderer(
+                new RendererStyle($size, 1),
+                new SvgImageBackEnd()
+            );
+
+            $writer = new Writer($renderer);
+
+            return $writer->writeString($content);
+        } catch (\Throwable $e) {
+            \Log::error('QR Code generateSvg failed: ' . $e->getMessage());
+            return '';
+        }
+    }
+
+    /**
+     * Save QR code to storage as SVG
      */
     public function saveToStorage(string $content, string $path, int $size = 200): string
     {
-        $png = QrCode::format('png')
-            ->size($size)
-            ->margin(1)
-            ->errorCorrection('H')
-            ->generate($content);
+        try {
+            $svg = $this->generateSvg($content, $size);
 
-        \Storage::disk('public')->put($path, $png);
+            if (empty($svg)) {
+                return '';
+            }
 
-        return $path;
+            \Storage::disk('public')->put($path, $svg);
+
+            return $path;
+        } catch (\Throwable $e) {
+            \Log::error('QR Code saveToStorage failed: ' . $e->getMessage());
+            return '';
+        }
     }
 }
