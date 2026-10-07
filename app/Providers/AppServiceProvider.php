@@ -12,7 +12,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register Bengali Font for DomPDF
+        $this->app->afterResolving('dompdf.wrapper', function ($pdf) {
+            $fontDir = storage_path('fonts');
+
+            // Register SolaimanLipi font manually
+            if (file_exists($fontDir . '/SolaimanLipi.ttf')) {
+                $pdf->getDomPDF()->getFontMetrics()->registerFont(
+                    ['family' => 'SolaimanLipi', 'style' => 'normal', 'weight' => 'normal'],
+                    $fontDir . '/SolaimanLipi.ttf'
+                );
+                $pdf->getDomPDF()->getFontMetrics()->registerFont(
+                    ['family' => 'SolaimanLipi', 'style' => 'normal', 'weight' => 'bold'],
+                    $fontDir . '/SolaimanLipi.ttf'
+                );
+            }
+        });
     }
 
     /**

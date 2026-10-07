@@ -2,7 +2,11 @@
 
 namespace Modules\Certificate\Services;
 
-use Barryvdh\DomPDF\Facade\Pdf;
+namespace Modules\Certificate\Services;
+
+use Mpdf\Mpdf;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
 use Modules\Certificate\Models\CertificateApplication;
 
 class CertificatePdfService
@@ -14,24 +18,39 @@ class CertificatePdfService
     /**
      * Generate PDF and return as download response
      */
-    public function download(CertificateApplication $application)
-    {
-        $pdf = $this->build($application);
+  public function download(CertificateApplication $application)
+{
+    $pdf = $this->build($application);
 
-        $filename = 'certificate-' . ($application->issuedCertificate->certificate_no ?? $application->tracking_no) . '.pdf';
-        $filename = str_replace(['/', '\\'], '-', $filename);
+    $filename = 'certificate-' .
+        ($application->issuedCertificate->certificate_no ?? $application->tracking_no) .
+        '.pdf';
 
-        return $pdf->download($filename);
-    }
+    $filename = str_replace(['/', '\\'], '-', $filename);
+
+    return response(
+        $pdf->Output($filename, 'S')
+    )
+    ->header('Content-Type', 'application/pdf')
+    ->header(
+        'Content-Disposition',
+        'attachment; filename="' . $filename . '"'
+    );
+}
 
     /**
      * Stream PDF in browser (for print preview)
      */
-    public function stream(CertificateApplication $application)
-    {
-        $pdf = $this->build($application);
-        return $pdf->stream('certificate.pdf');
-    }
+   public function stream(CertificateApplication $application)
+{
+    $pdf = $this->build($application);
+
+    return response(
+        $pdf->Output('certificate.pdf', 'S')
+    )
+    ->header('Content-Type', 'application/pdf')
+    ->header('Content-Disposition', 'inline; filename="certificate.pdf"');
+}
 
     /**
      * Save PDF to storage and return path
@@ -51,25 +70,22 @@ class CertificatePdfService
      * Build the PDF instance
      */
 
-    protected function build(CertificateApplication $application)
+
+protected function build(CertificateApplication $application)
 {
     $application->load([
-        'union', 'ward', 'village', 'applicant',
-        'certificateType', 'issuedCertificate',
+        'union',
+        'ward',
+        'village',
+        'applicant',
+        'certificateType',
+        'issuedCertificate',
     ]);
 
     $certificate = $application->issuedCertificate;
 
-    // Generate QR code (SVG)
+    // QR আপাতত বন্ধ রাখা হয়েছে
     $qrCode = null;
-    $qrSvg = null;
-    if ($certificate && $certificate->verification_code) {
-        $qrCode = $this->qrService->generateForCertificate($certificate->verification_code);
-        $qrSvg = $this->qrService->generateSvg(
-            route('verify.certificate', ['code' => $certificate->verification_code]),
-            120
-        );
-    }
 
     $data = [
         'application' => $application,
@@ -78,74 +94,103 @@ class CertificatePdfService
         'ward' => $application->ward,
         'type' => $application->certificateType,
         'qrCode' => $qrCode,
-        'qrSvg' => $qrSvg,
         'generatedAt' => now(),
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Certificate Template
+    |--------------------------------------------------------------------------
+    */
+
     $template = $this->getTemplate($application);
 
-    $pdf = Pdf::loadView($template, $data);
-    $pdf->setPaper('A4', 'portrait');
+    $html = view($template, $data)->render();
 
-    // ============ CRITICAL: FONT CONFIGURATION ============
-  $pdf->setOptions([
-    'isRemoteEnabled' => true,
-    'isHtml5ParserEnabled' => true,
-    'isFontSubsettingEnabled' => true,
-    'defaultFont' => 'SolaimanLipi',              // ← এই নাম
-    'fontDir' => storage_path('fonts'),
-    'fontCache' => storage_path('fonts'),
-    'tempDir' => storage_path('app'),
-    'chroot' => [
-        base_path(),
-        storage_path('app/public'),
-        storage_path('fonts'),
-    ],
-    'dpi' => 96,
-]);
+    /*
+    |--------------------------------------------------------------------------
+    | mPDF Font Configuration
+    |--------------------------------------------------------------------------
+    */
 
-    return $pdf;
+    $defaultConfig = (new ConfigVariables())->getDefaults();
+    $fontDirs = $defaultConfig['fontDir'];
+
+    $defaultFontConfig = (new FontVariables())->getDefaults();
+    $fontData = $defaultFontConfig['fontdata'];
+
+    $fontData['solaimanlipi'] = [
+        'R' => 'solaimanlipi_normal_094ca0febebd4422f31d39b58cbc6746.ttf',
+        'B' => 'solaimanlipi_bold_094ca0febebd4422f31d39b58cbc6746.ttf',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | mPDF
+    |--------------------------------------------------------------------------
+    */
+
+    $mpdf = new Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'orientation' => 'P',
+
+        'margin_left' => 10,
+        'margin_right' => 10,
+        'margin_top' => 8,
+        'margin_bottom' => 8,
+
+        'margin_header' => 0,
+        'margin_footer' => 0,
+
+        'default_font' => 'solaimanlipi',
+        'default_font_size' => 11,
+
+        'fontDir' => array_merge(
+            $fontDirs,
+            [
+                storage_path('fonts'),
+            ]
+        ),
+
+        'fontdata' => $fontData,
+
+        'tempDir' => storage_path('app/mpdf'),
+    ]);
+
+    $mpdf->autoScriptToLang = true;
+    $mpdf->autoLangToFont = false;
+
+    $mpdf->SetDisplayMode('fullpage');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Write HTML
+    |--------------------------------------------------------------------------
+    */
+
+    $html = '
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: solaimanlipi;">
+    <h2>বাংলা পরীক্ষা</h2>
+    <p>ইউনিয়ন পরিষদ</p>
+    <p>সনদপত্র</p>
+    <p>আবেদনকারীর নাম: মোঃ আব্দুর রহমান</p>
+    <p>চেয়ারম্যান</p>
+</body>
+</html>
+';
+
+$mpdf->WriteHTML($html);
+
+return $mpdf;
+
+
 }
-
-
-    // protected function build(CertificateApplication $application)
-    // {
-    //     $application->load([
-    //         'union', 'ward', 'village', 'applicant',
-    //         'certificateType', 'issuedCertificate',
-    //     ]);
-
-    //     $certificate = $application->issuedCertificate;
-
-    //     // Generate QR code
-    //     $qrCode = null;
-    //     if ($certificate && $certificate->verification_code) {
-    //         $qrCode = $this->qrService->generateForCertificate($certificate->verification_code);
-    //     }
-
-    //     $data = [
-    //         'application' => $application,
-    //         'certificate' => $certificate,
-    //         'union' => $application->union,
-    //         'ward' => $application->ward,
-    //         'type' => $application->certificateType,
-    //         'qrCode' => $qrCode,
-    //         'generatedAt' => now(),
-    //     ];
-
-    //     // Pick template based on certificate type
-    //     $template = $this->getTemplate($application);
-
-    //     $pdf = Pdf::loadView($template, $data);
-    //     $pdf->setPaper('A4', 'portrait');
-    //     $pdf->setOptions([
-    //         'isRemoteEnabled' => true,
-    //         'isHtml5ParserEnabled' => true,
-    //         'defaultFont' => 'DejaVu Sans',
-    //     ]);
-
-    //     return $pdf;
-    // }
 
     /**
      * Choose template file
